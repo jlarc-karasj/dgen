@@ -204,6 +204,7 @@ def calc_system_size_and_performance(agent, sectors, rate_switch_table=None):
     # PV
     pv = dict()
 
+    #load_profile_df = agent_mutation.elec.get_and_apply_agent_load_profiles(con, agent) # for full release, don't uncomment
 
     state_path = model_settings.load_path
 
@@ -219,8 +220,10 @@ def calc_system_size_and_performance(agent, sectors, rate_switch_table=None):
 
 
     load_profile = pd.Series(de_ts[s].to_list())
-    
     pv['consumption_hourly'] = load_profile
+
+
+    #pv['consumption_hourly'] = pd.Series(load_profile_df['consumption_hourly']).iloc[0] # *** for full release, don't uncomment ***
 
     # Using the scale offset factor of 1E6 for capacity factors
     norm_scaled_pv_cf_profiles_df = agent_mutation.elec.get_and_apply_normalized_hourly_resource_solar(con, agent)

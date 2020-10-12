@@ -101,10 +101,8 @@ def main(mode = None, resume_year = None, endyear = None, ReEDS_inputs = None):
                 # =========================================================
                 # Initialize agents
                 # =========================================================   
-             
-                # Depending on settings either generate new agents or use pre-generated agents from provided .pkl file                
-                solar_agents = iFuncs.import_agent_file(scenario_settings, con, cur, engine, model_settings, agent_file_status, input_name='agent_file')
-                
+                            
+                solar_agents = iFuncs.import_agent_file(scenario_settings, con, cur, engine, model_settings, agent_file_status, input_name='agent_file')                
 
                 # Get set of columns that define agent's immutable attributes
                 cols_base = list(solar_agents.df.columns)
@@ -272,9 +270,11 @@ def main(mode = None, resume_year = None, endyear = None, ReEDS_inputs = None):
 
             #####################################################################
             # drop the new scenario_settings.schema
+            engine.dispose()
+            con.close()
             datfunc.drop_output_schema(model_settings.pg_conn_string, scenario_settings.schema, model_settings.delete_output_schema)
             #####################################################################
-            engine.dispose()
+            
             logger.info("-------------Model Run Complete-------------")
             time_to_complete = time.time() - model_settings.model_init
             logger.info('Completed in: {} seconds'.format(round(time_to_complete, 1)))

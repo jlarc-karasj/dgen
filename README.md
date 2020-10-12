@@ -1,5 +1,9 @@
 ![dGen outputs in action](https://www.nrel.gov/analysis/dgen/assets/images/hero-hp-dgen.jpg)
 
+## Watch The Webinar and Demo
+https://attendee.gotowebinar.com/recording/8157192513262044417
+
+
 ## Get Your Tools
 Install Docker (Mac): https://docs.docker.com/docker-for-mac/install/; (Windows): https://docs.docker.com/docker-for-windows/install/
 
@@ -10,6 +14,8 @@ Install Anaconda Python 3.7 Version: https://www.anaconda.com/distribution/
 Install PgAdmin: https://www.pgadmin.org/download/ (ignore all of the options for docker, python, os host, etc.)
 
 Install Git: If you don't already have git installed, then navigate here to install it for your operating system: https://www.atlassian.com/git/tutorials/install-git
+
+Windows users: if you don't have UNIX commands enabled for command prompt/powershell then you'll need to install Cygwin to run a UNIX terminal.
 
 ## Download Code 
 New users should fork a copy of dGen to their own private github account 
@@ -52,11 +58,14 @@ After cloning this repository and installing (and running) Docker as well as Ana
 ```
    $ docker container ls
    $ docker exec -it <container id> psql -U postgres
-   $ CREATE DATABASE dgen_db;
+   $ postgres=# CREATE DATABASE dgen_db;
 ```
 - If you get the error ``` psql: FATAL:  the database system is starting up ``` try rerunning the docker exec command again after a minute or so because docker can take some time to initialize everything.
 
 - ```CREATE DATABASE``` will be printed when the database is created. ```\l``` will display the databases in your server.
+
+- ```Postgres=# \c dgen_db``` can then be used to connect to the database.
+
 
 ### B. Download data (agents and database):
 Download data here (https://app.box.com/s/9zx58ojj0hhwr3b59xhanvmzimp06bgt) and make sure to unzip any zipped files once downloaded. Note, only download one data file at a time to avoid Box's "download size exceeded" error.
@@ -67,11 +76,19 @@ Next, run the following in the command line (replacing 'path_to_where_you_saved_
    $ cat /path_to_where_you_saved_data/dgen_db.sql | docker exec -i <container id> psql -U postgres -d dgen_db
 ```
 
+- Note, if on a Windows machine, use Powershell rather than command prompt. If linux commands still aren't working in Powershell, you can copy the data to the docker container and then load the data by running:
+
+```
+   $ docker cp /path_to_where_you_saved_data/dgen_db.sql <container id>:/dgen_db.sql
+   $ docker exec -i <container id> psql -U postgres -d dgen_db -f dgen_db.sql
+```
+
+- Backing up the database will likely take 45-60 minutes. 
 - Don't close docker at any point while running dGen.
 - The container can be "paused" by running ```$ docker stop <container id>``` and "started" by running ```$ docker start <container id>```
 
 ### C. Create Local Server:
-Once the database is restored (it could take a couple minutes), open PgAdmin and create a new server. Name this whatever you want. Write "localhost" (or 127.0.0.1) in the host/address cell and "postgres" in both the username and password cells. Upon refreshing this and opening the database dropdown, you should be able to see your database. 
+Once the database is restored (it will take 45-60 minutes), open PgAdmin and create a new server. Name this whatever you want. Write "localhost" (or 127.0.0.1) in the host/address cell and "postgres" in both the username and password cells. Upon refreshing this and opening the database dropdown, you should be able to see your database. 
 
 ### D: Activate Environment 
 Activate the dg3n environment and launch spyder by opening a new terminal window and run the following command:
