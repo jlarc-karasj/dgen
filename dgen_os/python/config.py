@@ -16,7 +16,7 @@ pg_params_file = 'pg_params_atlas.json'
 #   path to load file corresponding to the state-sector scenario you're running
 #==============================================================================
 
-load_path = '/Users/tstanley/Documents/dGen_Materials/OpenSourcing/Load_Integration/fixed_loads/res/state_data/state_timeseries/DE_timeseries.parquet'
+load_path = '//Securefs/jlarc_power$/Documentation/Analysis/Workpapers/git_repo/dgen_data/OS_dGen_Beta_Load_Meta_Data/res/state_data/state_timeseries/WA_timeseries.parquet'
 
 #==============================================================================
 #   model start year
