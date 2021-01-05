@@ -1,6 +1,7 @@
 """
 Functions for pulling data
 """
+# SEE LINE 284 FOR CHANGING INCENTIVES
 import psycopg2 as pg
 import time
 import numpy as np
@@ -284,7 +285,7 @@ def get_bass_params(con, schema):
 def get_state_incentives(con):
 
     # changed from 2019 to 2020
-    sql = """SELECT * FROM diffusion_shared.state_incentives_2020;"""
+    sql = """SELECT * FROM diffusion_shared.wa_incentives_2020;""" # wa for incentives, no for no incentives
 
     state_incentives = pd.read_sql(sql, con)
 

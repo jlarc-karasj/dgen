@@ -74,6 +74,9 @@ def calc_diffusion_solar(df, is_first_year, bass_params, year,
     df['batt_kw_cum'] = df['batt_kw_cum_last_year'] + df['new_batt_kw']
     df['batt_kwh_cum'] = df['batt_kwh_cum_last_year'] + df['new_batt_kwh']
     
+    """
+    Removing this portion of the code so that the model doesn't backfill known values - JK
+	
     # constrain state-level capacity totals to known historical values
     if year in (2014, 2016, 2018):
         group_cols = ['state_abbr', 'sector_abbr', 'year']
@@ -122,7 +125,8 @@ def calc_diffusion_solar(df, is_first_year, bass_params, year,
                  'state_solar_kw_cum','state_batt_kw_cum','state_batt_kwh_cum',
                  'observed_solar_mw','observed_storage_mw','observed_storage_mwh',
                  'solar_scale_factor','batt_mw_scale_factor','batt_mwh_scale_factor'], axis=1, inplace=True)
-    
+        """
+	
     market_last_year = df[['agent_id',
                             'market_share','max_market_share','number_of_adopters',
                             'market_value','initial_number_of_adopters','initial_pv_kw','initial_batt_kw','initial_batt_kwh',
