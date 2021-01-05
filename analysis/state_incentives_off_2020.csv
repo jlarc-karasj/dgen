@@ -1,0 +1,2 @@
+state_abbr,sector_abbr,tech,incentive_type,min_kw,max_kw,pbi_usd_p_kwh,min_incentive_usd,max_incentive_usd,cbi_usd_p_w,ibi_pct,budget_annual_usd,budget_total_usd,incentive_cap_annual_mw,incentive_cap_total_mw,incentive_duration_yrs,start_date,end_date,cbi_usd_p_wh,max_incentive_pct,min_incentive_pct,min_kwh,max_kwh
+WA,res,solar,PBI,,12,0.54,,,,,,110000000,,,8,,6/30/2017,,,,,
