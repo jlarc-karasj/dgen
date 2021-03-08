@@ -1,0 +1,5 @@
+Using 15 year loan term (This was provided by Rachel from the GNL Consolidated Solar Loan Data)
+Using 3.24% loan interest rate (Same as 1)
+
+Previous real_discount_rate was 0.027, which is equal to (1 + 0.012)*(1 + 0.0149) - 1
+Setting new real_discount_rate to (1.02420949)*(1.0324) = 1.0477

@@ -284,8 +284,9 @@ def get_bass_params(con, schema):
 
 def get_state_incentives(con):
 
-    # changed from 2019 to 2020
-    sql = """SELECT * FROM diffusion_shared.wa_incentives_2020;""" # wa for incentives, no for no incentives
+    # START - JLARC EDIT
+    sql = """SELECT * FROM diffusion_shared.no_incentives_2020;""" # wa for incentives, no for no incentives
+    # END - JLARC EDIT
 
     state_incentives = pd.read_sql(sql, con)
 

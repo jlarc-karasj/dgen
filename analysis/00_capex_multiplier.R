@@ -7,7 +7,8 @@
 library(tidyverse)
 library(rstanarm)
 
-data <- readxl::read_excel("//securefs/jlarc_power$/Documentation/Materials/Agencies/WSUSolardata2020-05-29_Cleaning.xlsx")
+data <- readxl::read_excel("//securefs/jlarc_power$/Documentation/Materials/Agencies/WSU/WSUSolardata2020-05-29_Cleaning.xlsx",
+                           sheet = "WSUEnergy")
 
 # Remove commercial solar projects and anything over 15 kW capacity
 data_clean <- data %>% 

@@ -75,6 +75,7 @@ def calc_diffusion_solar(df, is_first_year, bass_params, year,
     df['batt_kwh_cum'] = df['batt_kwh_cum_last_year'] + df['new_batt_kwh']
     
     """
+    # START - JLARC EDIT
     Removing this portion of the code so that the model doesn't backfill known values - JK
 	
     # constrain state-level capacity totals to known historical values
@@ -125,6 +126,7 @@ def calc_diffusion_solar(df, is_first_year, bass_params, year,
                  'state_solar_kw_cum','state_batt_kw_cum','state_batt_kwh_cum',
                  'observed_solar_mw','observed_storage_mw','observed_storage_mwh',
                  'solar_scale_factor','batt_mw_scale_factor','batt_mwh_scale_factor'], axis=1, inplace=True)
+        # END - JLARC EDIT
         """
 	
     market_last_year = df[['agent_id',

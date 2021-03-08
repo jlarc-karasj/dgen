@@ -21,27 +21,26 @@ crosslink <- wa_meta %>%
   distinct()
 
 # Load a model run
-run_num <- 2
-input_paths <- paste0("//Securefs/jlarc_power$/Documentation/Analysis/Workpapers/git_repo/dgen/analysis/model_runs/agent_outputs_", c("control_", "counter_"), run_num, ".csv")
+input_paths <- paste0("//Securefs/jlarc_power$/Documentation/Analysis/Workpapers/git_repo/dgen/analysis/model_runs/agent_outputs_", c("incentives_on_2", "incentives_off_2"), ".csv")
 
 # Flag model runs with 2018 preference turned on as control
-control <- readr::read_csv(input_paths[1])
-control$treatment <- "control"
+incentives_on <- readr::read_csv(input_paths[1])
+incentives_on$treatment <- "incentives_on"
 
 # Flag model runs with 2018 preference turned off as counterfactual
-counterfactual <- readr::read_csv(input_paths[2])
-counterfactual$treatment <- "counterfactual"
+incentives_off <- readr::read_csv(input_paths[2])
+incentives_off$treatment <- "incentives_off"
 
-data <- bind_rows(control, counterfactual) %>%
+data <- bind_rows(incentives_on, incentives_off) %>%
   left_join(crosslink)
 
-rm(control, counterfactual, wa_meta, crosslink)
+rm(incentives_on, incentives_off, wa_meta, crosslink)
 
 
 # Histograms --------------------------------------------------------------
 
 graphs  <- data %>% 
-  filter(treatment == "control" & year == 2018 & new_adopters > 0)
+  filter(treatment == "incentives_on" & year == 2018 & new_adopters > 0)
 
 hist(graphs$developable_roof_sqft)
 
@@ -87,34 +86,36 @@ adopters %>%
   ggplot(aes(x = year, y = adopters, color = treatment)) + 
   geom_line(size = 1.0) + 
   labs(title = "Yearly New Adopters", x = "Year", y = "New Adopters", color = "Treatment") + 
-  scale_x_discrete(limits = seq(2014, 2030, 2)) + 
-  scale_color_discrete(labels = c("Tax Preference ON", "Tax Preference OFF")) +
+  scale_x_continuous(limits = c(2014, 2024), breaks = seq(2014, 2024, 2)) + 
   theme_minimal()
 
 
 # Difference of New Adopters between Control and Counterfactual by year
 adopters_diff <- adopters %>%
   spread(treatment, adopters) %>%
-  mutate(difference = control - counterfactual)
+  mutate(difference = incentives_on - incentives_off)
 
 adopters_diff %>%
   ggplot(aes(x = year, y = difference)) + 
   geom_line(size = 1.0) + 
   labs(title = "Yearly Difference in New Adopters", subtitle = "(Tax Pref ON - Tax Pref OFF)", x = "Year", y = "Difference in New Adopters") + 
-  scale_x_discrete(limits = seq(2014, 2030, 2)) + 
+  scale_x_continuous(limits = c(2014, 2024), breaks = seq(2014, 2024, 2)) + 
   theme_minimal()
   
 
 # Cumulative difference of new adopters by year
 adopters_cum <- adopters_diff %>% 
-    mutate(cumulative = cumsum(difference))
+    mutate(cumulative = cumsum(difference),
+           cumulative_off = cumsum(incentives_off),
+           cumulative_on = cumsum(incentives_on),
+           perc_diff = (cumulative_on / cumulative_off) - 1)
 
 adopters_cum %>%
-    ggplot(aes(x = year, y = cumulative)) + 
-    geom_line(size = 1.0) + 
-    labs(title = "Cumulative Difference in New Adopters", subtitle = "(Tax Pref ON - Tax Pref OFF)", x = "Year", y = "Difference in New Adopters") + 
-    scale_x_discrete(limits = seq(2014, 2030, 2)) + 
-    theme_minimal()
+  ggplot(aes(x = year, y = perc_diff)) + 
+  geom_line(size = 1.0) + 
+  labs(title = "Percent Difference in New Adopters", subtitle = "(Tax Pref ON / Tax Pref OFF)", x = "Year", y = "Difference in New Adotpers") + 
+  scale_x_continuous(limits = c(2014, 2024), breaks = seq(2014, 2024, 2)) + 
+  theme_minimal()
 
 rm(adopters, adopters_cum, adopters_diff)
 
@@ -131,33 +132,35 @@ systems %>%
   ggplot(aes(x = year, y = system_kw, color = treatment)) + 
   geom_line(size = 1.0) + 
   labs(title = "Yearly New System KW", x = "Year", y = "New System KW", color = "Treatment") + 
-  scale_x_discrete(limits = seq(2014, 2030, 2)) + 
-  scale_color_discrete(labels = c("Tax Preference ON", "Tax Preference OFF")) +
+  scale_x_continuous(limits = c(2014, 2024), breaks = seq(2014, 2024, 2)) + 
   theme_minimal()
 
 
 # Difference of New Adopters between Control and Counterfactual by year
 systems_diff <- systems %>%
   spread(treatment, system_kw) %>%
-  mutate(difference = control - counterfactual)
+  mutate(difference = incentives_on - incentives_off)
 
 systems_diff %>%
   ggplot(aes(x = year, y = difference)) + 
   geom_line(size = 1.0) + 
   labs(title = "Yearly Difference in New System KW", subtitle = "(Tax Pref ON - Tax Pref OFF)", x = "Year", y = "Difference in New System KW") + 
-  scale_x_discrete(limits = seq(2014, 2030, 2)) + 
+  scale_x_continuous(limits = c(2014, 2024), breaks = seq(2014, 2024, 2)) +  
   theme_minimal()
 
 
 # Cumulative difference of new adopters by year
 systems_cum <- systems_diff %>% 
-  mutate(cumulative = cumsum(difference))
+  mutate(cumulative = cumsum(difference),
+         cumulative_off = cumsum(incentives_off),
+         cumulative_on = cumsum(incentives_on),
+         perc_diff = (cumulative_on / cumulative_off) - 1)
 
 systems_cum %>%
-  ggplot(aes(x = year, y = cumulative)) + 
+  ggplot(aes(x = year, y = perc_diff)) + 
   geom_line(size = 1.0) + 
   labs(title = "Cumulative Difference in New System KW", subtitle = "(Tax Pref ON - Tax Pref OFF)", x = "Year", y = "Difference in New System KW") + 
-  scale_x_discrete(limits = seq(2014, 2030, 2)) + 
+  scale_x_continuous(limits = c(2014, 2024), breaks = seq(2014, 2024, 2)) + 
   theme_minimal()
 
 rm(systems, systems_diff, systems_cum)
@@ -167,7 +170,7 @@ rm(systems, systems_diff, systems_cum)
 
 county %>% 
   group_by(year, treatment) %>% 
-  summarise(size = sum(total_new_system_kw) / sum(total_new_adopters)) %>% 
+  summarise(size = round(sum(total_new_system_kw) / sum(total_new_adopters), 1)) %>% 
   ggplot(aes(x = year, y = size, color = treatment)) + 
   geom_line(size = 1.0) + 
   labs(title = "Average System Size", x = "Year", y = "Average System KW") + 
@@ -179,7 +182,7 @@ county %>%
   summarise(adopters = sum(total_adopters), customers = sum(total_customers)) %>%
   ungroup() %>%
   spread(treatment, adopters) %>%
-  mutate(control_percent = control / customers, counterfactual_percent = counterfactual / customers)
+  mutate(incentives_on_percent = incentives_on / customers, incentives_off_percent = incentives_off / customers)
 
 
 #output_path <- paste0("//Securefs/jlarc_power$/Documentation/Analysis/Workpapers/git_repo/dgen_analysis/model_runs/county_totals_run", run_num, ".csv")

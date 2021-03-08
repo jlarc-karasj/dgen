@@ -220,8 +220,14 @@ def calc_system_performance(kw, pv, utilityrate, loan, batt, costs, agent, rate_
     #utilityrate.ElectricityRates.ur_metering_option = ur_metering_option
     
     utilityrate.execute()
+    
+    # START - JLARC MODIFIED INPUTS
+    jlarc_system_costs = system_costs * agent.loc['cap_cost_multiplier']
+    
+    loan = process_incentives(loan, kw, computed_power, computed_size, gen_hourly, jlarc_system_costs, agent)
+    # END - JLARC MODIFIED INPUTS
 
-    loan = process_incentives(loan, kw, computed_power, computed_size, gen_hourly, agent)
+    #loan = process_incentives(loan, kw, computed_power, computed_size, gen_hourly, agent)
     
     # Specify final Cashloan parameters
     loan.FinancialParameters.system_capacity = kw
@@ -937,7 +943,7 @@ def process_tariff(utilityrate, tariff_dict, net_billing_sell_rate):
 
 
 #%%
-def process_incentives(loan, kw, batt_kw, batt_kwh, generation_hourly, agent):
+def process_incentives(loan, kw, batt_kw, batt_kwh, generation_hourly, jlarc_system_costs, agent):
     
     ######################################
     ###----------- CASHLOAN -----------###
@@ -1003,16 +1009,23 @@ def process_incentives(loan, kw, batt_kw, batt_kwh, generation_hourly, agent):
         kwh_by_timestep = kw * pv_kwh_by_year
         
         pbi_value = calculate_production_based_incentives(kw, kwh_by_timestep, agent)
+        
+        # START - JLARC EDIT
+        modified_incentive = min(5000/sum(generation_hourly), pbi_df['pbi_usd_p_kwh'].iloc[0])
+        modified_loan_duration = min((0.5 * jlarc_system_costs) / (modified_incentive * sum(generation_hourly)), 8)
+        # END - JLARC EDIT
     
         # For multiple PBIs that are applicable to the agent, cap at 2 and use PySAM's "state" and "other" option
         if len(pbi_df) == 1:
             
             # Aamount input [$/kWh] requires sequence -- repeat pbi_usd_p_kwh using incentive_duration_yrs 
-            loan.PaymentIncentives.pbi_sta_amount = [pbi_df['pbi_usd_p_kwh'].iloc[0]] * int(pbi_df['incentive_duration_yrs'].iloc[0])
+            loan.PaymentIncentives.pbi_sta_amount = [modified_incentive] * int(modified_loan_duration)
+            #loan.PaymentIncentives.pbi_sta_amount = [pbi_df['pbi_usd_p_kwh'].iloc[0]] * int(pbi_df['incentive_duration_yrs'].iloc[0])
             loan.PaymentIncentives.pbi_sta_escal = 0.
             loan.PaymentIncentives.pbi_sta_tax_fed = 1
             loan.PaymentIncentives.pbi_sta_tax_sta = 1
-            loan.PaymentIncentives.pbi_sta_term = pbi_df['incentive_duration_yrs'].iloc[0]
+            loan.PaymentIncentives.pbi_sta_term = modified_loan_duration
+            #loan.PaymentIncentives.pbi_sta_term = pbi_df['incentive_duration_yrs'].iloc[0]
             
         elif len(pbi_df) >= 2:
             
